@@ -1,6 +1,7 @@
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
+import { styles } from "./photo/style";
 
 interface Album {
   userId: number;
@@ -35,9 +36,9 @@ const AlbumPage = () => {
     <View>
       {albums.map((album, index) => (
         <Link key={index} href={`/album/photo/${album.id}`}>
-          <TouchableOpacity>
-            <Text>{album.title}</Text>
-          </TouchableOpacity>
+          <View style={styles.textContainer}>
+            <Text style={styles.text}>{album.title}</Text>
+          </View>
         </Link>
       ))}
     </View>
