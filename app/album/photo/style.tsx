@@ -19,8 +19,4 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingTop: StatusBar.currentHeight,
   },
-  scrollView: {
-    // backgroundColor: "pink",
-    // marginHorizontal: 20,
-  },
 });

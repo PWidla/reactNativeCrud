@@ -41,7 +41,7 @@ const AlbumPage = () => {
 
   return (
     <SafeAreaView style={styles.safeAreaView}>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView>
         {albums.map((album, index) => (
           <Link key={index} href={`/album/photo/${album.id}`}>
             <View style={styles.textContainer}>
