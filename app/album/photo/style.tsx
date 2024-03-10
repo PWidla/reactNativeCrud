@@ -34,4 +34,17 @@ export const styles = StyleSheet.create({
   pictureContainer: {
     marginBottom: 15,
   },
+  menuHomePage: {
+    flexDirection: "column",
+    justifyContent: "space-between",
+    alignItems: "center",
+    height: "100%",
+    width: windowWidth,
+    paddingVertical: 150,
+    paddingHorizontal: 150,
+  },
+  menuLink: {
+    width: "100%",
+    fontSize: 30,
+  },
 });

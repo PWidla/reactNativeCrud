@@ -1,12 +1,19 @@
-import { Link, router } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Link } from "expo-router";
+import { View } from "react-native";
+import { styles } from "./album/photo/style";
 
 const HomePage = () => {
   return (
-    <View>
-      <Link href="/album/AlbumPage">Albums</Link>
-      <Link href="/post/PostPage">Posts</Link>
-      <Link href="/user/UserPage">Users</Link>
+    <View style={styles.menuHomePage}>
+      <Link href="/album/AlbumPage" style={styles.menuLink}>
+        Albums
+      </Link>
+      <Link href="/post/PostPage" style={styles.menuLink}>
+        Posts
+      </Link>
+      <Link href="/user/UserPage" style={styles.menuLink}>
+        Users
+      </Link>
     </View>
   );
 };
