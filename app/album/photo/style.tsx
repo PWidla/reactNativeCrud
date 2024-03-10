@@ -19,4 +19,12 @@ export const styles = StyleSheet.create({
     flex: 1,
     paddingTop: StatusBar.currentHeight,
   },
+  picture: {
+    width: 150,
+    height: 150,
+  },
+  pictureContainer: {
+    width: windowWidth,
+    alignItems: "center",
+  },
 });
