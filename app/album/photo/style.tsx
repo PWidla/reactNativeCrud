@@ -23,8 +23,15 @@ export const styles = StyleSheet.create({
     width: 150,
     height: 150,
   },
-  pictureContainer: {
+  allPicturesContainer: {
     width: windowWidth,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
+    padding: 16,
     alignItems: "center",
+  },
+  pictureContainer: {
+    marginBottom: 15,
   },
 });

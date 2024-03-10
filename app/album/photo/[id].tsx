@@ -39,16 +39,18 @@ const PhotoPage = () => {
   return (
     <SafeAreaView style={styles.safeAreaView}>
       <ScrollView>
-        {photos.map((photo, index) => (
-          <View style={styles.pictureContainer}>
-            <Image
-              style={styles.picture}
-              source={{
-                uri: photo.url,
-              }}
-            />
-          </View>
-        ))}
+        <View style={styles.allPicturesContainer}>
+          {photos.map((photo, index) => (
+            <View style={styles.pictureContainer}>
+              <Image
+                style={styles.picture}
+                source={{
+                  uri: photo.url,
+                }}
+              />
+            </View>
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
