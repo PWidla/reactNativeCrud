@@ -1,6 +1,13 @@
 import { Link } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, TouchableOpacity, View } from "react-native";
+import {
+  Text,
+  TouchableOpacity,
+  View,
+  ScrollView,
+  SafeAreaView,
+  StatusBar,
+} from "react-native";
 import { styles } from "./photo/style";
 
 interface Album {
@@ -33,15 +40,17 @@ const AlbumPage = () => {
   }, []);
 
   return (
-    <View>
-      {albums.map((album, index) => (
-        <Link key={index} href={`/album/photo/${album.id}`}>
-          <View style={styles.textContainer}>
-            <Text style={styles.text}>{album.title}</Text>
-          </View>
-        </Link>
-      ))}
-    </View>
+    <SafeAreaView style={styles.safeAreaView}>
+      <ScrollView style={styles.scrollView}>
+        {albums.map((album, index) => (
+          <Link key={index} href={`/album/photo/${album.id}`}>
+            <View style={styles.textContainer}>
+              <Text style={styles.text}>{album.title}</Text>
+            </View>
+          </Link>
+        ))}
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 

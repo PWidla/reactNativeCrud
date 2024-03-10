@@ -1,4 +1,4 @@
-import { StyleSheet, Dimensions } from "react-native";
+import { StyleSheet, Dimensions, StatusBar } from "react-native";
 
 const windowWidth = Dimensions.get("window").width;
 
@@ -14,5 +14,13 @@ export const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     width: windowWidth,
+  },
+  safeAreaView: {
+    flex: 1,
+    paddingTop: StatusBar.currentHeight,
+  },
+  scrollView: {
+    // backgroundColor: "pink",
+    // marginHorizontal: 20,
   },
 });
