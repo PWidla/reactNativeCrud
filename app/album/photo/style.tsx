@@ -45,7 +45,7 @@ export const styles = StyleSheet.create({
   },
   menuLink: {
     width: "100%",
-    fontSize: 30,
+    fontSize: 25,
   },
   photoDetailContainer: {
     alignItems: "center",
