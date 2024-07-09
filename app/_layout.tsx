@@ -46,6 +46,12 @@ const RootLayout = () => {
           headerTitle: "Photo details",
         }}
       />
+      <Stack.Screen
+        name="post/comment/[id]"
+        options={{
+          headerTitle: "Comments",
+        }}
+      />
     </Stack>
   );
 };
