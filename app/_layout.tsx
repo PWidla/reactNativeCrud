@@ -40,6 +40,12 @@ const RootLayout = () => {
           headerTitle: "Photos page",
         }}
       />
+      <Stack.Screen
+        name="album/photo/photoDetails/[id]"
+        options={{
+          headerTitle: "Photo details",
+        }}
+      />
     </Stack>
   );
 };

@@ -47,4 +47,9 @@ export const styles = StyleSheet.create({
     width: "100%",
     fontSize: 30,
   },
+  photoDetailContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    flex: 1,
+  },
 });

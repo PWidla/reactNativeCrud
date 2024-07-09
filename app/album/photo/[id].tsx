@@ -1,6 +1,12 @@
-import { useLocalSearchParams } from "expo-router";
+import { Link, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
-import { Text, View, Image, ScrollView, SafeAreaView } from "react-native";
+import {
+  View,
+  Image,
+  ScrollView,
+  SafeAreaView,
+  TouchableOpacity,
+} from "react-native";
 import { styles } from "./style";
 
 interface Photo {
@@ -40,15 +46,17 @@ const PhotoPage = () => {
     <SafeAreaView style={styles.safeAreaView}>
       <ScrollView>
         <View style={styles.allPicturesContainer}>
-          {photos.map((photo, index) => (
-            <View style={styles.pictureContainer}>
-              <Image
-                style={styles.picture}
-                source={{
-                  uri: photo.url,
-                }}
-              />
-            </View>
+          {photos.map((photo) => (
+            <Link key={photo.id} href={`album/photo/photoDetails/${photo.id}`}>
+              <View style={styles.pictureContainer}>
+                <Image
+                  style={styles.picture}
+                  source={{
+                    uri: photo.url,
+                  }}
+                />
+              </View>
+            </Link>
           ))}
         </View>
       </ScrollView>
