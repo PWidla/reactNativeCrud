@@ -23,9 +23,6 @@ const PostPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostTitle, setNewPostTitle] = useState<string>("");
   const [newPostBody, setNewPostBody] = useState<string>("");
-  const [selectedPostId, setSelectedPostId] = useState<number | null>(null);
-
-  // States to hold temporary values for updating posts
   const [editTitle, setEditTitle] = useState<{ [key: number]: string }>({});
   const [editBody, setEditBody] = useState<{ [key: number]: string }>({});
 
@@ -37,6 +34,16 @@ const PostPage = () => {
       if (postsResponse.ok) {
         const newPosts: Post[] = await postsResponse.json();
         setPosts(newPosts);
+        const initialTitles = newPosts.reduce((acc, post) => {
+          acc[post.id] = post.title;
+          return acc;
+        }, {} as { [key: number]: string });
+        setEditTitle(initialTitles);
+        const initialBodies = newPosts.reduce((acc, post) => {
+          acc[post.id] = post.body;
+          return acc;
+        }, {} as { [key: number]: string });
+        setEditBody(initialBodies);
       } else {
         console.error("Failed to fetch posts");
       }
@@ -74,6 +81,14 @@ const PostPage = () => {
       if (response.ok) {
         const newPost: Post = await response.json();
         setPosts((prevPosts) => [newPost, ...prevPosts]);
+        setEditTitle((prevTitles) => ({
+          ...prevTitles,
+          [newPost.id]: newPost.title,
+        }));
+        setEditBody((prevBodies) => ({
+          ...prevBodies,
+          [newPost.id]: newPost.body,
+        }));
         setNewPostTitle("");
         setNewPostBody("");
         Alert.alert("Success", "Post created successfully!");
@@ -86,16 +101,10 @@ const PostPage = () => {
   };
 
   const handleUpdatePost = async (postId: number) => {
-    const postToUpdate = posts.find((post) => post.id === postId);
-    if (!postToUpdate) {
-      console.error(`Post with id ${postId} not found`);
-      return;
-    }
+    const updatedTitle = editTitle[postId];
+    const updatedBody = editBody[postId];
 
-    const updatedTitle = editTitle[postId]?.trim() || postToUpdate.title;
-    const updatedBody = editBody[postId]?.trim() || postToUpdate.body;
-
-    if (!updatedTitle || !updatedBody) {
+    if (!updatedTitle.trim() || !updatedBody.trim()) {
       Alert.alert("Error", "Title and body cannot be empty!");
       return;
     }
@@ -121,8 +130,6 @@ const PostPage = () => {
           )
         );
         Alert.alert("Success", "Post updated successfully!");
-        setEditTitle((prev) => ({ ...prev, [postId]: "" }));
-        setEditBody((prev) => ({ ...prev, [postId]: "" }));
       } else {
         console.error("Failed to update post");
       }
@@ -148,15 +155,6 @@ const PostPage = () => {
       }
     } catch (error) {
       console.error(`Error: ${error}`);
-    }
-  };
-
-  const handleSelectPost = (postId: number) => {
-    setSelectedPostId(postId);
-    const postToUpdate = posts.find((post) => post.id === postId);
-    if (postToUpdate) {
-      setEditTitle((prev) => ({ ...prev, [postId]: postToUpdate.title }));
-      setEditBody((prev) => ({ ...prev, [postId]: postToUpdate.body }));
     }
   };
 
@@ -189,11 +187,7 @@ const PostPage = () => {
               <Text style={styles.text}>{post.title}</Text>
             </Link>
             <TextInput
-              value={
-                selectedPostId === post.id
-                  ? editTitle[post.id] ?? post.title
-                  : post.title
-              }
+              value={editTitle[post.id]}
               onChangeText={(text) =>
                 setEditTitle((prev) => ({ ...prev, [post.id]: text }))
               }
@@ -201,11 +195,7 @@ const PostPage = () => {
               style={generalStyles.textInput}
             />
             <TextInput
-              value={
-                selectedPostId === post.id
-                  ? editBody[post.id] ?? post.body
-                  : post.body
-              }
+              value={editBody[post.id]}
               onChangeText={(text) =>
                 setEditBody((prev) => ({ ...prev, [post.id]: text }))
               }
@@ -223,12 +213,6 @@ const PostPage = () => {
               onPress={() => handleDeletePost(post.id)}
             >
               <Text style={generalStyles.buttonText}>Delete</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={generalStyles.button}
-              onPress={() => handleSelectPost(post.id)}
-            >
-              <Text style={generalStyles.buttonText}>Select</Text>
             </TouchableOpacity>
           </View>
         ))}
