@@ -31,6 +31,7 @@ const PostDetailsPage = () => {
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<Comment[]>([]);
   const [newCommentBody, setNewCommentBody] = useState<string>("");
+  const [newCommentName, setNewCommentName] = useState<string>("");
   const [editCommentBodies, setEditCommentBodies] = useState<{
     [key: number]: string;
   }>({});
@@ -39,6 +40,7 @@ const PostDetailsPage = () => {
   }>({});
   const [editingCommentId, setEditingCommentId] = useState<number | null>(null);
   const { id } = useLocalSearchParams<{ id: string }>();
+  const [lastUsedId, setLastUsedId] = useState<number>(500);
 
   const fetchPostData = async () => {
     try {
@@ -78,48 +80,46 @@ const PostDetailsPage = () => {
     fetchPostData();
   }, []);
 
-  const handleCreateComment = async () => {
-    if (!newCommentBody.trim()) {
-      Alert.alert("Error", "Comment body cannot be empty!");
+  const handleCreateComment = () => {
+    if (!newCommentBody.trim() || !newCommentName.trim()) {
+      Alert.alert("Error", "Comment name and body cannot be empty!");
       return;
     }
 
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/comments`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            postId: id,
-            body: newCommentBody,
-            name: "User",
-            email: "user@example.com",
-          }),
-        }
-      );
-
-      if (response.ok) {
-        const newComment: Comment = await response.json();
-        setComments((prevComments) => [newComment, ...prevComments]);
-        setEditCommentBodies((prevBodies) => ({
-          ...prevBodies,
-          [newComment.id]: newComment.body,
-        }));
-
-        setNewCommentBody("");
-        Alert.alert("Success", "Comment created successfully!");
-      } else {
-        console.error("Failed to create comment");
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
+    if (comments.some((comment) => comment.name === newCommentName)) {
+      Alert.alert("Error", "Comment name must be unique!");
+      return;
     }
+
+    const uniqueId = lastUsedId + 1;
+
+    const newComment: Comment = {
+      postId: Number(id),
+      id: uniqueId,
+      name: newCommentName,
+      email: "user@example.com",
+      body: newCommentBody,
+    };
+
+    setComments((prevComments) => [newComment, ...prevComments]);
+    setEditCommentBodies((prevBodies) => ({
+      ...prevBodies,
+      [uniqueId]: newCommentBody,
+    }));
+
+    setEditCommentNames((prevNames) => ({
+      ...prevNames,
+      [uniqueId]: newCommentName,
+    }));
+
+    setNewCommentBody("");
+    setNewCommentName("");
+    setLastUsedId(uniqueId);
+
+    Alert.alert("Success", "Comment created successfully!");
   };
 
-  const handleUpdateComment = async (commentId: number) => {
+  const handleUpdateComment = (commentId: number) => {
     const updatedBody = editCommentBodies[commentId];
     const updatedName = editCommentNames[commentId];
 
@@ -128,57 +128,27 @@ const PostDetailsPage = () => {
       return;
     }
 
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/comments/${commentId}`,
-        {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ body: updatedBody, name: updatedName }),
-        }
-      );
-
-      if (response.ok) {
-        setComments((prevComments) =>
-          prevComments.map((comment) =>
-            comment.id === commentId
-              ? { ...comment, body: updatedBody, name: updatedName }
-              : comment
-          )
-        );
-        setEditingCommentId(null);
-        Alert.alert("Success", "Comment updated successfully!");
-      } else {
-        console.error("Failed to update comment");
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
+    setComments((prevComments) =>
+      prevComments.map((comment) =>
+        comment.id === commentId
+          ? { ...comment, body: updatedBody, name: updatedName }
+          : comment
+      )
+    );
+    setEditingCommentId(null);
+    Alert.alert("Success", "Comment updated successfully!");
   };
 
-  const handleDeleteComment = async (commentId: number) => {
-    try {
-      const response = await fetch(
-        `https://jsonplaceholder.typicode.com/comments/${commentId}`,
-        {
-          method: "DELETE",
-        }
-      );
+  const handleDeleteComment = (commentId: number) => {
+    setComments((prevComments) =>
+      prevComments.filter((comment) => comment.id !== commentId)
+    );
+    setEditingCommentId(null);
+    Alert.alert("Success", "Comment deleted successfully!");
+  };
 
-      if (response.ok) {
-        setComments((prevComments) =>
-          prevComments.filter((comment) => comment.id !== commentId)
-        );
-        setEditingCommentId(null);
-        Alert.alert("Success", "Comment deleted successfully!");
-      } else {
-        console.error("Failed to delete comment");
-      }
-    } catch (error) {
-      console.error(`Error: ${error}`);
-    }
+  const handleEditComment = (commentId: number) => {
+    setEditingCommentId(commentId === editingCommentId ? null : commentId);
   };
 
   return (
@@ -189,9 +159,15 @@ const PostDetailsPage = () => {
             <Text style={styles.titleText}>{post.title}</Text>
             <Text style={styles.bodyText}>{post.body}</Text>
             <TextInput
+              value={newCommentName}
+              onChangeText={setNewCommentName}
+              placeholder="Enter new comment name"
+              style={generalStyles.textInput}
+            />
+            <TextInput
               value={newCommentBody}
               onChangeText={setNewCommentBody}
-              placeholder="Enter new comment"
+              placeholder="Enter new comment body"
               style={generalStyles.textInput}
             />
             <TouchableOpacity
@@ -243,7 +219,7 @@ const PostDetailsPage = () => {
                   </>
                 ) : (
                   <TouchableOpacity
-                    onPress={() => setEditingCommentId(comment.id)}
+                    onPress={() => handleEditComment(comment.id)}
                   >
                     <Text style={styles.commentText}>{comment.name}</Text>
                     <Text style={styles.commentText}>{comment.body}</Text>
