@@ -49,7 +49,7 @@ const RootLayout = () => {
       <Stack.Screen
         name="post/comment/[id]"
         options={{
-          headerTitle: "Comments",
+          headerTitle: "Comments page",
         }}
       />
     </Stack>
