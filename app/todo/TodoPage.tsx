@@ -102,7 +102,7 @@ const TodoPage = () => {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: 1, // Stały użytkownik, można dostosować w zależności od logiki wyboru użytkownika
+            userId: 1,
             title: newTodoTitle,
             completed: false,
           }),

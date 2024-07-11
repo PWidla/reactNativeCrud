@@ -64,7 +64,7 @@ const AlbumPage = () => {
           },
           body: JSON.stringify({
             title: newAlbumTitle,
-            userId: 1, // Assuming userId 1 for simplicity
+            userId: 1,
           }),
         }
       );
