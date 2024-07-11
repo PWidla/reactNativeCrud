@@ -33,11 +33,10 @@ export const generalStyles = StyleSheet.create({
     margin: 20,
   },
   textContainer: {
-    marginBottom: 20,
-    padding: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 5,
+    backgroundColor: "#e0e0e0",
+    padding: 16,
+    borderRadius: 8,
+    marginBottom: 16,
   },
   titleText: {
     fontSize: 24,
