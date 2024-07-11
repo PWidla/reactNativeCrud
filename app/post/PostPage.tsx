@@ -1,16 +1,17 @@
-import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
-  Text,
   View,
+  Text,
+  TouchableOpacity,
   ScrollView,
   TextInput,
-  TouchableOpacity,
   Alert,
   SafeAreaView,
 } from "react-native";
 import { styles } from "../album/photo/style";
 import { generalStyles } from "../generalStyle";
+import { Link } from "expo-router";
+import { Picker } from "@react-native-picker/picker";
 
 interface Post {
   userId: number;
@@ -19,18 +20,34 @@ interface Post {
   body: string;
 }
 
+interface User {
+  id: number;
+  name: string;
+}
+
 const PostPage = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [newPostTitle, setNewPostTitle] = useState<string>("");
   const [newPostBody, setNewPostBody] = useState<string>("");
   const [editTitle, setEditTitle] = useState<{ [key: number]: string }>({});
   const [editBody, setEditBody] = useState<{ [key: number]: string }>({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | "all">("all");
+
+  useEffect(() => {
+    fetchAllData();
+    fetchUsers();
+  }, [selectedUserId]);
 
   const fetchAllData = async () => {
+    let url = "https://jsonplaceholder.typicode.com/posts";
+
+    if (selectedUserId !== "all") {
+      url += `?userId=${selectedUserId}`;
+    }
+
     try {
-      const postsResponse = await fetch(
-        "https://jsonplaceholder.typicode.com/posts"
-      );
+      const postsResponse = await fetch(url);
       if (postsResponse.ok) {
         const newPosts: Post[] = await postsResponse.json();
         setPosts(newPosts);
@@ -52,9 +69,21 @@ const PostPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      if (response.ok) {
+        const data: User[] = await response.json();
+        setUsers(data);
+      } else {
+        console.error("Failed to fetch users");
+      }
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  };
 
   const handleCreatePost = async () => {
     if (!newPostTitle.trim() || !newPostBody.trim()) {
@@ -180,6 +209,20 @@ const PostPage = () => {
           >
             <Text style={generalStyles.buttonText}>Create Post</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.textContainer}>
+          <Text>Select User:</Text>
+          <Picker
+            selectedValue={selectedUserId}
+            onValueChange={(itemValue) =>
+              setSelectedUserId(itemValue as number | "all")
+            }
+          >
+            <Picker.Item label="All Users" value="all" />
+            {users.map((user) => (
+              <Picker.Item key={user.id} label={user.name} value={user.id} />
+            ))}
+          </Picker>
         </View>
         {posts.map((post) => (
           <View key={post.id} style={styles.textContainer}>
