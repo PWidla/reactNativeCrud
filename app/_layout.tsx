@@ -52,6 +52,12 @@ const RootLayout = () => {
           headerTitle: "Comments page",
         }}
       />
+      <Stack.Screen
+        name="todo/TodoPage"
+        options={{
+          headerTitle: "Todos page",
+        }}
+      />
     </Stack>
   );
 };

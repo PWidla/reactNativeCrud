@@ -9,8 +9,8 @@ import {
   Alert,
   SafeAreaView,
 } from "react-native";
-import { styles } from "../../post/style";
 import { generalStyles } from "../../generalStyle";
+import { styles } from "../style";
 
 interface Post {
   userId: number;

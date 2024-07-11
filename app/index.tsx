@@ -14,6 +14,9 @@ const HomePage = () => {
       <Link href="/user/UserPage" style={styles.menuLink}>
         Users
       </Link>
+      <Link href="/todo/TodoPage" style={styles.menuLink}>
+        Todos
+      </Link>
     </View>
   );
 };
