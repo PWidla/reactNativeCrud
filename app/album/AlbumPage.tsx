@@ -1,16 +1,17 @@
 import { Link } from "expo-router";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Text,
-  TouchableOpacity,
   View,
   ScrollView,
-  SafeAreaView,
   TextInput,
+  TouchableOpacity,
   Alert,
+  SafeAreaView,
 } from "react-native";
 import { styles } from "./photo/style";
 import { generalStyles } from "../generalStyle";
+import { Picker } from "@react-native-picker/picker";
 
 interface Album {
   userId: number;
@@ -18,16 +19,31 @@ interface Album {
   title: string;
 }
 
+interface User {
+  id: number;
+  name: string;
+}
+
 const AlbumPage = () => {
   const [albums, setAlbums] = useState<Album[]>([]);
   const [newAlbumTitle, setNewAlbumTitle] = useState<string>("");
   const [albumTitles, setAlbumTitles] = useState<{ [key: number]: string }>({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | "all">("all");
+
+  useEffect(() => {
+    fetchAllData();
+    fetchUsers();
+  }, [selectedUserId]);
 
   const fetchAllData = async () => {
+    let url = "https://jsonplaceholder.typicode.com/albums";
+    if (selectedUserId !== "all") {
+      url += `?userId=${selectedUserId}`;
+    }
+
     try {
-      const response = await fetch(
-        "https://jsonplaceholder.typicode.com/albums"
-      );
+      const response = await fetch(url);
       if (response.ok) {
         const newAlbums: Album[] = await response.json();
         setAlbums(newAlbums);
@@ -44,9 +60,21 @@ const AlbumPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAllData();
-  }, []);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      if (response.ok) {
+        const data: User[] = await response.json();
+        setUsers(data);
+      } else {
+        console.error("Failed to fetch users");
+      }
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  };
 
   const handleCreateAlbum = async () => {
     if (!newAlbumTitle.trim()) {
@@ -158,6 +186,20 @@ const AlbumPage = () => {
           >
             <Text style={generalStyles.buttonText}>Create Album</Text>
           </TouchableOpacity>
+        </View>
+        <View style={styles.textContainer}>
+          <Text>Select User:</Text>
+          <Picker
+            selectedValue={selectedUserId}
+            onValueChange={(itemValue) =>
+              setSelectedUserId(itemValue as number | "all")
+            }
+          >
+            <Picker.Item label="All Users" value="all" />
+            {users.map((user) => (
+              <Picker.Item key={user.id} label={user.name} value={user.id} />
+            ))}
+          </Picker>
         </View>
         {albums.map((album) => (
           <View key={album.id} style={styles.textContainer}>
