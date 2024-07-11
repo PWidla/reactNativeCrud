@@ -1,20 +1,20 @@
 import { Link } from "expo-router";
 import { View } from "react-native";
-import { styles } from "./album/photo/style";
+import { mainWindowStyle } from "./users/mainWindowStyle";
 
 const HomePage = () => {
   return (
-    <View style={styles.menuHomePage}>
-      <Link href="/album/AlbumPage" style={styles.menuLink}>
+    <View style={mainWindowStyle.menuHomePage}>
+      <Link href="/album/AlbumPage" style={mainWindowStyle.menuLink}>
         Albums
       </Link>
-      <Link href="/post/PostPage" style={styles.menuLink}>
+      <Link href="/post/PostPage" style={mainWindowStyle.menuLink}>
         Posts
       </Link>
-      <Link href="/user/UserPage" style={styles.menuLink}>
+      <Link href="/user/UserPage" style={mainWindowStyle.menuLink}>
         Users
       </Link>
-      <Link href="/todo/TodoPage" style={styles.menuLink}>
+      <Link href="/todo/TodoPage" style={mainWindowStyle.menuLink}>
         Todos
       </Link>
     </View>
