@@ -9,12 +9,18 @@ import {
   SafeAreaView,
 } from "react-native";
 import { generalStyles } from "../generalStyle";
+import { Picker } from "@react-native-picker/picker";
 
 interface Todo {
   userId: number;
   id: number;
   title: string;
   completed: boolean;
+}
+
+interface User {
+  id: number;
+  name: string;
 }
 
 const TodoPage = () => {
@@ -26,13 +32,24 @@ const TodoPage = () => {
   const [editTodoCompleted, setEditTodoCompleted] = useState<{
     [key: number]: boolean;
   }>({});
+  const [users, setUsers] = useState<User[]>([]);
+  const [selectedUserId, setSelectedUserId] = useState<number | "all">("all");
   const [lastUsedId, setLastUsedId] = useState<number>(200);
 
+  useEffect(() => {
+    fetchAllTodos();
+    fetchUsers();
+  }, [selectedUserId]);
+
   const fetchAllTodos = async () => {
+    let url = "https://jsonplaceholder.typicode.com/todos";
+
+    if (selectedUserId !== "all") {
+      url += `?userId=${selectedUserId}`;
+    }
+
     try {
-      const todosResponse = await fetch(
-        `https://jsonplaceholder.typicode.com/todos`
-      );
+      const todosResponse = await fetch(url);
       if (todosResponse.ok) {
         const todosData: Todo[] = await todosResponse.json();
         setTodos(todosData);
@@ -54,9 +71,21 @@ const TodoPage = () => {
     }
   };
 
-  useEffect(() => {
-    fetchAllTodos();
-  }, []);
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch(
+        "https://jsonplaceholder.typicode.com/users"
+      );
+      if (response.ok) {
+        const data: User[] = await response.json();
+        setUsers(data);
+      } else {
+        console.error("Failed to fetch users");
+      }
+    } catch (error) {
+      console.error(`Error: ${error}`);
+    }
+  };
 
   const handleCreateTodo = async () => {
     if (!newTodoTitle.trim()) {
@@ -66,14 +95,14 @@ const TodoPage = () => {
 
     try {
       const response = await fetch(
-        `https://jsonplaceholder.typicode.com/todos`,
+        "https://jsonplaceholder.typicode.com/todos",
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            userId: 1,
+            userId: 1, // Stały użytkownik, można dostosować w zależności od logiki wyboru użytkownika
             title: newTodoTitle,
             completed: false,
           }),
@@ -213,6 +242,20 @@ const TodoPage = () => {
           >
             <Text style={generalStyles.buttonText}>Create Todo</Text>
           </TouchableOpacity>
+        </View>
+        <View style={generalStyles.textContainer}>
+          <Text>Select User:</Text>
+          <Picker
+            selectedValue={selectedUserId}
+            onValueChange={(itemValue) =>
+              setSelectedUserId(itemValue as number | "all")
+            }
+          >
+            <Picker.Item label="All Users" value="all" />
+            {users.map((user) => (
+              <Picker.Item key={user.id} label={user.name} value={user.id} />
+            ))}
+          </Picker>
         </View>
         {todos.map((todo) => (
           <View key={todo.id} style={generalStyles.textContainer}>
